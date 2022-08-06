@@ -49,10 +49,27 @@ def get_circles(image, param1, param2, min_r, max_r, c_prev=None):
             if c_prev is not None:
                 d = math.dist(center, c_prev)
             else:
-                d = math.dist(center, (image.shape[1]/2, image.shape[0]/2))
+                d = math.dist(center, (image.shape[1] / 2, image.shape[0] / 2))
 
             if d < distance:
                 distance = d
                 ret = circle
 
     return ret
+
+
+def get_circle_blob(image):
+    im = cv2.GaussianBlur(image, (11, 11), 0)
+    im = cv2.inRange(im, 23, 30)
+    ret, im = cv2.threshold(im, 127, 255, 0)
+
+    contours, _ = cv2.findContours(im, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
+    cnt = max(contours, key=cv2.contourArea)
+
+    (x, y), radius = cv2.minEnclosingCircle(cnt)
+
+    center = (int(x), int(y))
+    radius = int(radius)
+
+    return center, radius
