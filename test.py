@@ -1,13 +1,11 @@
 import glob
 
-from main import process_image
-
 
 def main():
-    files = glob.glob(r"data\CASIA-Iris-Twins\**\*.jpg", recursive=True)
-    with open("README.md", "w") as readme:
+    files = glob.glob(r"data\IITD Database\**\*.*", recursive=True)
+    with open("data/output1/README.md", "w") as readme:
         for i, file in enumerate(files):
-            out = "/".join(file.replace(r"data\CASIA-Iris-Twins", r"data\output").split("\\"))
+            out = "/".join(file.replace(r"data\IITD Database", r"data\output1").split("\\"))
             out = f"![eye image](./{out}/eye.png)\n"
 
             print(out)

@@ -1,4 +1,6 @@
 # Project exclude paths
 .idea
 data/CASIA-Iris-Twins
+data/IITD Database
 **/__pycache__
+venv

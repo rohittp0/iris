@@ -24,20 +24,18 @@ def process_image(im_path, out_path):
     polar_array = cv2.cvtColor(np.asarray(polar_array * 255, dtype=np.uint8), cv2.COLOR_GRAY2BGR)
     noise_array = cv2.cvtColor(np.asarray(noise_array * 255, dtype=np.uint8), cv2.COLOR_GRAY2BGR)
 
-    cv2.imshow("eye", im)
-    cv2.waitKey()
-
     cv2.imwrite(f"{out_path}/polar.png", polar_array)
     cv2.imwrite(f"{out_path}/noise.png", noise_array)
+    cv2.imwrite(f"{out_path}/eye.png", im)
 
 
 def main():
-    files = glob.glob(r"data\CASIA-Iris-Twins\**\*.jpg", recursive=True)
+    files = glob.glob(r"data\IITD Database\**\*.*", recursive=True)
     for i, file in enumerate(files):
-        out = "/".join(file.replace(r"data\CASIA-Iris-Twins", r"data\output").split("\\"))
+        out = "/".join(file.replace(r"data\IITD Database", r"data\output1").split("\\"))
         process_image(file, out)
 
-        print(f"{i+1}/{len(files)} Processed")
+        print(f"{i + 1}/{len(files)} Processed")
 
 
 if __name__ == "__main__":
