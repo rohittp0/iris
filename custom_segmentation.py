@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 from fnc.normalize import normalize
-from utils import show_image, outer_params, get_circles, get_circle_blob
+from utils import get_circles, get_circle_blob, show_image
 
 
 def process_image(im_path, out_path):
@@ -45,6 +45,9 @@ def process_image(im_path, out_path):
 def main():
     files = glob.glob(r"data\CASIA-Iris-Twins\**\*.*", recursive=True)
     for i, file in enumerate(files):
+        if i < 105:
+            continue
+
         out = "/".join(file.replace(r"data\CASIA-Iris-Twins", r"data\output").split("\\"))
         process_image(file, out)
 
