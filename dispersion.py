@@ -18,3 +18,12 @@ for title, data in [("Row", dispersion_rows), ("Column", dispersion_cols)]:
     axis.plot(data)
 
     figure.savefig("data/" + title)
+
+# tau =1
+# m = 4, 5, 6
+# c = 3, 4 ,5
+# logx = e
+
+# SpecEn
+# N = 512
+# freq = none
