@@ -45,7 +45,7 @@ def process_image(im_path, out_path):
 def main():
     files = glob.glob(r"data\CASIA-Iris-Twins\**\*.*", recursive=True)
     for i, file in enumerate(files):
-        if i < 105:
+        if i < 3170:
             continue
 
         out = "/".join(file.replace(r"data\CASIA-Iris-Twins", r"data\output").split("\\"))
