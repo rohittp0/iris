@@ -30,9 +30,9 @@ def process_image(im_path, out_path):
 
 
 def main():
-    files = glob.glob(r"data\IITD Database\**\*.*", recursive=True)
+    files = glob.glob(r"data\CASIA1\**\*.*", recursive=True)
     for i, file in enumerate(files):
-        out = "/".join(file.replace(r"data\IITD Database", r"data\output1").split("\\"))
+        out = "/".join(file.replace(r"data\CASIA1", r"data\output2").split("\\"))
         process_image(file, out)
 
         print(f"{i + 1}/{len(files)} Processed")
