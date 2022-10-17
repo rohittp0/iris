@@ -2,5 +2,6 @@
 .idea
 data/CASIA-Iris-Twins
 data/IITD Database
+data/CASIA1
 **/__pycache__
 venv
