@@ -8,6 +8,7 @@ def show_image(*image):
     for i, img in enumerate(image):
         cv2.imshow(f"image {i}", img)
     cv2.waitKey()
+    cv2.destroyAllWindows()
 
 
 inner_params = (50, 60, 30, 40)

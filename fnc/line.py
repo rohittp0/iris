@@ -9,7 +9,7 @@ from skimage.transform import radon
 ##-----------------------------------------------------------------------------
 ##  Function
 ##-----------------------------------------------------------------------------
-def findline(img):
+def findline(img, sigma=2, virt=0, horiz=1):
     """
 	Description:
 		Find lines in an image.
@@ -22,7 +22,7 @@ def findline(img):
 		lines   - Parameters of the detected line in polar form.
 	"""
     # Pre-processing
-    I2, orient = canny(img, 2, 0, 1)
+    I2, orient = canny(img, sigma, virt, horiz)
     I3 = adjgamma(I2, 1.9)
     I4 = nonmaxsup(I3, orient, 1.5)
     edgeimage = hysthresh(I4, 0.2, 0.15)
@@ -31,7 +31,7 @@ def findline(img):
     theta = np.arange(180)
     R = radon(edgeimage, theta, circle=False)
     sz = R.shape[0] // 2
-    xp = np.arange(-sz, sz+1, 1)
+    xp = np.arange(-sz, sz + 1, 1)
 
     # Find for the strongest edge
     maxv = np.max(R)
@@ -52,7 +52,7 @@ def findline(img):
     lines = np.vstack([np.cos(t), np.sin(t), -r]).transpose()
     cx = img.shape[1] / 2 - 1
     cy = img.shape[0] / 2 - 1
-    lines[:, 2] = lines[:,2] - lines[:,0]*cx - lines[:,1]*cy
+    lines[:, 2] = lines[:, 2] - lines[:, 0] * cx - lines[:, 1] * cy
     return lines
 
 
@@ -70,11 +70,11 @@ def linecoords(lines, imsize):
 		x,y     - Resulting coordinates.
 	"""
     xd = np.arange(imsize[1])
-    yd = (-lines[0,2] - lines[0,0] * xd) / lines[0,1]
+    yd = (-lines[0, 2] - lines[0, 0] * xd) / lines[0, 1]
 
     coords = np.where(yd >= imsize[0])
     coords = coords[0]
-    yd[coords] = imsize[0]-1
+    yd[coords] = imsize[0] - 1
     coords = np.where(yd < 0)
     coords = coords[0]
     yd[coords] = 0
@@ -116,7 +116,7 @@ def canny(im, sigma, vert, horz):
     im = convolve(im, gaussian, mode='constant')  # Smoothed image
     rows, cols = im.shape
 
-    h = np.concatenate([im[:, 1:cols], np.zeros([rows,1])], axis=1) - \
+    h = np.concatenate([im[:, 1:cols], np.zeros([rows, 1])], axis=1) - \
         np.concatenate([np.zeros([rows, 1]), im[:, 0: cols - 1]], axis=1)
 
     v = np.concatenate([im[1: rows, :], np.zeros([1, cols])], axis=0) - \
@@ -124,7 +124,7 @@ def canny(im, sigma, vert, horz):
 
     d11 = np.concatenate([im[1:rows, 1:cols], np.zeros([rows - 1, 1])], axis=1)
     d11 = np.concatenate([d11, np.zeros([1, cols])], axis=0)
-    d12 = np.concatenate([np.zeros([rows-1, 1]), im[0:rows - 1, 0:cols - 1]], axis=1)
+    d12 = np.concatenate([np.zeros([rows - 1, 1]), im[0:rows - 1, 0:cols - 1]], axis=1)
     d12 = np.concatenate([np.zeros([1, cols]), d12], axis=0)
     d1 = d11 - d12
 
@@ -277,16 +277,16 @@ def hysthresh(im, T1, T2):
     rp1 = rows + 1
 
     bw = im.ravel()  # Make image into a column vector
-    pix = np.where(bw > T1) # Find indices of all pixels with value > T1
+    pix = np.where(bw > T1)  # Find indices of all pixels with value > T1
     pix = pix[0]
-    npix = pix.size         # Find the number of pixels with value > T1
+    npix = pix.size  # Find the number of pixels with value > T1
 
     # Create a stack array (that should never overflow)
     stack = np.zeros(rows * cols)
-    stack[0:npix] = pix         # Put all the edge points on the stack
+    stack[0:npix] = pix  # Put all the edge points on the stack
     stp = npix  # set stack pointer
     for k in range(npix):
-        bw[pix[k]] = -1         # Mark points as edges
+        bw[pix[k]] = -1  # Mark points as edges
 
     # Pre-compute an array, O, of index offset values that correspond to the eight
     # surrounding pixels of any point. Note that the image was transformed into
@@ -301,7 +301,7 @@ def hysthresh(im, T1, T2):
     O = np.array([-1, 1, -rows - 1, -rows, -rows + 1, rows - 1, rows, rows + 1])
 
     while stp != 0:  # While the stack is not empty
-        v = int(stack[stp-1])  # Pop next index off the stack
+        v = int(stack[stp - 1])  # Pop next index off the stack
         stp -= 1
 
         if rp1 < v < rcmr:  # Prevent us from generating illegal indices
@@ -312,10 +312,9 @@ def hysthresh(im, T1, T2):
                 ind = index[l]
                 if bw[ind] > T2:  # if value > T2,
                     stp += 1  # push index onto the stack.
-                    stack[stp-1] = ind
+                    stack[stp - 1] = ind
                     bw[ind] = -1  # mark this as an edge point
 
     bw = (bw == -1)  # Finally zero out anything that was not an edge
     bw = np.reshape(bw, [rows, cols])  # Reshape the image
     return bw
-
