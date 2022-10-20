@@ -9,33 +9,24 @@ from fnc.segment import segment
 from utils import show_image
 
 
+def transform_image(img, threshold):
+    retval, threshold = cv2.threshold(img, threshold, 255, cv2.THRESH_BINARY)
+
+    opening = cv2.morphologyEx(threshold, cv2.MORPH_OPEN, kernel)
+    closing = cv2.morphologyEx(threshold, cv2.MORPH_CLOSE, kernel)
+
+    open_close = cv2.bitwise_or(opening, closing, mask=None)
+
+    return open_close
+
+
 def process_image(im_path, out_path):
-    read = cv2.imread(im_path, 0)
-    params = {"minrad": 10, "multiplier": 0.8, "sigma": 2, "virt": 0, "horiz": 1}
+    im = cv2.imread(im_path, 0)
 
-    while True:
-        im = read.copy()
+    ciriris, cirpupil, imwithnoise = segment(im, **params, eyelashes_thres=80)
 
-        ciriris, cirpupil, imwithnoise = segment(im, **params, eyelashes_thres=80)
-
-        cv2.circle(im, [*reversed(ciriris[:2])], ciriris[2], (0, 255, 0), 2)
-        cv2.circle(im, [*reversed(cirpupil[:2])], cirpupil[2], (255, 0, 255), 2)
-
-        show_image(im)
-
-        choice = int(input("1) Save\n 2) Retry\n 3) Skip\n"))
-
-        if choice == 2:
-            for param in params:
-                params[param] = input(f"{param} ({params[param]}): ")
-                if params[param].isdigit():
-                    params[param] = int(params[param])
-                else:
-                    params[param] = float(params[param])
-        elif choice == 1:
-            break
-        elif choice == 3:
-            return
+    cv2.circle(im, [*reversed(ciriris[:2])], ciriris[2], (0, 255, 0), 2)
+    cv2.circle(im, [*reversed(cirpupil[:2])], cirpupil[2], (255, 0, 255), 2)
 
     pathlib.Path(out_path).parent.mkdir(parents=True, exist_ok=True)
 
