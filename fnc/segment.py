@@ -31,7 +31,7 @@ def segment(i):
         if difference > 800:
             break
 
-    _, contours = cv2.findContours(working_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    contours, _ = cv2.findContours(working_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 
     if contours is None:
         return
@@ -42,7 +42,10 @@ def segment(i):
         if x + w < 150 and y + h < 200 and x - w // 4 > 0:
             cv2.rectangle(working_img, (x, y), (x + w, y + h), (0, 255, 0), -2)
 
-    _, contours_2 = cv2.findContours(working_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+    contours_2, _ = cv2.findContours(working_img, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+
+    if contours_2 is None:
+        return
 
     maximum_area = 0
     maximum_width = 0
