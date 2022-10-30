@@ -57,9 +57,13 @@ def process_image(im_path, out_path):
 
 
 def main():
-    files = glob.glob(r"data\CASIA1\**\*.*", recursive=True)
+    data_folder = input("Enter the data folder : ")
+    files = glob.glob(f"data/{data_folder}/**/*.*", recursive=True)
     for i, file in enumerate(files):
-        out = "/".join(file.replace(r"data\CASIA1", r"data\CASIA1_iris-full").split("\\"))
+        # if i < 3170:
+        #     continue
+
+        out = "/".join(file.replace(f"data/{data_folder}", f"data/{data_folder}_iris_full").split("\\"))
         process_image(file, out)
 
         print(f"{i + 1}/{len(files)} Processed")
