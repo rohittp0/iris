@@ -35,20 +35,31 @@ def process_image(im_path, out_path):
     polar_array = cv2.cvtColor(np.asarray(polar_array * 255, dtype=np.uint8), cv2.COLOR_GRAY2BGR)
     noise_array = cv2.cvtColor(np.asarray(noise_array * 255, dtype=np.uint8), cv2.COLOR_GRAY2BGR)
 
-    # show_image(img)
+    pathlib.Path(out_path).parent.mkdir(parents=True, exist_ok=True)
 
-    cv2.imwrite(f"{out_path}/polar.png", polar_array)
-    cv2.imwrite(f"{out_path}/noise.png", noise_array)
-    cv2.imwrite(f"{out_path}/eye.png", img)
+    cv2.imwrite(f"{out_path}_polar.png", polar_array)
+    cv2.imwrite(f"{out_path}_noise.png", noise_array)
+    cv2.imwrite(f"{out_path}_eye.png", im)
+
+    np.savetxt(f"{out_path}_polar.txt", cv2.cvtColor(polar_array, cv2.COLOR_BGR2GRAY))
+    np.savetxt(f"{out_path}_noise.txt", cv2.cvtColor(noise_array, cv2.COLOR_BGR2GRAY))
+    np.savetxt(f"{out_path}_eye.txt", im)
 
 
 def main():
-    files = glob.glob(r"data\CASIA-Iris-Twins\**\*.*", recursive=True)
-    for i, file in enumerate(files):
-        if i < 3170:
-            continue
+    data_folder = input("Enter the data folder : ")
+    out_base = f"data/{data_folder}_iris_full/"
 
-        out = "/".join(file.replace(r"data\CASIA-Iris-Twins", r"data\output").split("\\"))
+    files = glob.glob(f"data/{data_folder}/**/*.*", recursive=True)
+    for i, file in enumerate(files):
+        # if i < 3170:
+        #     continue
+
+        out = "/".join(file.replace(f"data/{data_folder}", out_base).split("\\"))
+        ext = "_".join([x.split(".")[0] for x in out.split(out_base)[-1].split("/")])[1:]
+
+        out = f"{out_base}{ext.split('_')[0]}/{ext}"
+
         process_image(file, out)
 
         print(f"{i + 1}/{len(files)} Processed")
