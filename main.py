@@ -37,7 +37,9 @@ def process_image(im_path, out_path):
         elif choice == 3:
             return
 
-    pathlib.Path(out_path).parent.mkdir(parents=True, exist_ok=True)
+    out = pathlib.Path(out_path)
+
+    pathlib.Path(out.parent).parent.mkdir(parents=True, exist_ok=True)
 
     polar_array, noise_array = normalize(imwithnoise, ciriris[1], ciriris[0], ciriris[2],
                                          cirpupil[1], cirpupil[0], cirpupil[2], radial_res=20, angular_res=240)
@@ -45,25 +47,29 @@ def process_image(im_path, out_path):
     polar_array = cv2.cvtColor(np.asarray(polar_array * 255, dtype=np.uint8), cv2.COLOR_GRAY2BGR)
     noise_array = cv2.cvtColor(np.asarray(noise_array * 255, dtype=np.uint8), cv2.COLOR_GRAY2BGR)
 
-    out_path = out_path.split(".")[0]
+    cv2.imwrite(f"{out.name}_polar.png", polar_array)
+    cv2.imwrite(f"{out.name}_noise.png", noise_array)
+    cv2.imwrite(f"{out.name}_eye.png", im)
 
-    cv2.imwrite(f"{out_path}_polar.png", polar_array)
-    cv2.imwrite(f"{out_path}_noise.png", noise_array)
-    cv2.imwrite(f"{out_path}_eye.png", im)
-
-    np.savetxt(f"{out_path}_polar.txt", cv2.cvtColor(polar_array, cv2.COLOR_BGR2GRAY))
-    np.savetxt(f"{out_path}_noise.txt", cv2.cvtColor(noise_array, cv2.COLOR_BGR2GRAY))
-    np.savetxt(f"{out_path}_eye.txt", im)
+    np.savetxt(f"{out.name}_polar.txt", cv2.cvtColor(polar_array, cv2.COLOR_BGR2GRAY))
+    np.savetxt(f"{out.name}_noise.txt", cv2.cvtColor(noise_array, cv2.COLOR_BGR2GRAY))
+    np.savetxt(f"{out.name}_eye.txt", im)
 
 
 def main():
     data_folder = input("Enter the data folder : ")
+    out_base = f"data/{data_folder}_iris_full/"
+
     files = glob.glob(f"data/{data_folder}/**/*.*", recursive=True)
     for i, file in enumerate(files):
         # if i < 3170:
         #     continue
 
-        out = "/".join(file.replace(f"data/{data_folder}", f"data/{data_folder}_iris_full").split("\\"))
+        out = "/".join(file.replace(f"data/{data_folder}", out_base).split("\\"))
+        ext = "_".join([x.split(".")[0] for x in out.split(out_base)[-1].split("/")])[1:]
+
+        out = f"{out_base}{ext.split('_')[0]}/{ext}"
+
         process_image(file, out)
 
         print(f"{i + 1}/{len(files)} Processed")
