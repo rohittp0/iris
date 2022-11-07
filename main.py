@@ -6,7 +6,6 @@ import numpy as np
 
 from fnc.normalize import normalize
 from fnc.segment import segment
-from utils import show_image
 
 
 def process_image(im_path, out_path):
